@@ -1,0 +1,164 @@
+@font-face {
+    font-family: 'EF_jejudoldam';
+    src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2210-EF@1.0/EF_jejudoldam.woff2') format('woff2');
+    font-weight: normal;
+    font-style: normal;
+}
+
+#plate {
+    position: relative;
+    width: 700px;
+    z-index: -2;
+    top: -10%;
+    height: 550px;
+    border-radius: 50%;
+    background-color: rgb(210, 219, 216);
+    overflow: hidden;
+}
+
+#iplate {
+    position: absolute;
+    width: 695px;
+    z-index: -1;
+    top: 10%;
+    margin: 0 auto;
+    overflow: hidden;
+    height: 495px;
+    border-radius: 50%;
+    background-color: rgb(177, 195, 190);
+    box-shadow: 0 0px 5px rgb(166, 192, 183);
+}
+
+#cover {
+    z-index: 3;
+    position: absolute;
+    width: 100%;
+    color: white;
+    font-size: 30pt;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background-color: rgba(0, 0, 0, 0.843);
+    -webkit-backdrop-filter: blur(10px);
+    backdrop-filter: blur(10px);
+    opacity: 100%;
+    line-height: 15pt;
+    text-align: center;
+}
+
+canvas {
+    z-index: -1;
+}
+
+#cover h1 {
+    display: block;
+    width: 100%;
+}
+
+#cover span {
+    font-size: 15pt;
+    display: block;
+    width: 100%;
+}
+
+#cover #warn {
+    display: none;
+}
+
+#tools {
+    width: 200px;
+    left: -220px;
+    display: flex;
+    position: absolute;
+    flex-direction: column;
+    line-height: 30pt;
+    font-size: 12pt;
+    vertical-align: center;
+    z-index: 0;
+    padding: 20px;
+    background-color: rgb(128, 157, 148);
+    filter: drop-shadow(0px 5px 0px rgba(0, 0, 0, 0.317));
+    transition: ease 0.5s;
+}
+
+h1 {
+    margin-top: 0;
+}
+
+#info {
+    position: absolute;
+    width: 100%;
+    text-align: center;
+}
+
+button {
+    border: 0;
+    outline: 0;
+}
+
+#tools img {
+    padding: 0px;
+    filter: drop-shadow(0 1px 3px rgba(0, 0, 0, 0.513));
+}
+
+#tools img:focus {
+    padding: 0px;
+    filter: drop-shadow(0 1px 3px rgba(0, 0, 0, 0.513));
+}
+
+#tools img:hover {
+    -webkit-filter: drop-shadow(2px 2px 0 white) drop-shadow(-2px 2px 0 white) drop-shadow(2px -2px 0 white) drop-shadow(-2px -2px 0 white);
+    filter: drop-shadow(2px 2px 0 white) drop-shadow(-2px 2px 0 white) drop-shadow(2px -2px 0 white) drop-shadow(-2px -2px 0 white);
+}
+
+#specimen {
+    position: absolute;
+    width: 695px;
+    z-index: -1;
+    top: -0.5%;
+    margin: 0 auto;
+    height: 495px;
+    border-radius: 50%;
+    overflow: hidden;
+    filter: drop-shadow(10);
+}
+
+#uplate {
+    position: absolute;
+    top: 55%;
+    left: 50%;
+    z-index: -3;
+    transform: translate(-50%, -50%);
+    width: 700px;
+    height: 550px;
+    border-radius: 37.8% 37.8% 50% 50%;
+    background-color: rgb(210, 219, 216);
+    box-shadow: 0 0px 10px rgba(0, 0, 0, 0.5);
+}
+
+body {
+    margin: 0;
+    overflow: hidden;
+    font-family: 'EF_jejudoldam';
+    color: white;
+    background-color: rgb(166, 192, 183);
+}
+
+@media screen and (max-width:800px) {
+    #cover {
+        background-color: black;
+        display: block;
+    }
+    #cover span {
+        display: none;
+    }
+    #cover h1 {
+        display: none;
+    }
+    #cover #warn {
+        line-height: 100vh;
+        display: block;
+    }
+}

@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>밀도의존성억제실험</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <div id="cover">
+        <h1>밀도 의존성 억제 실험</h1>
+        <span>"Space Bar"를 눌러 시작/정지</span>
+        <span id="warn">화면의 크기가 작습니다. PC에서 실행해주세요.</span>
+    </div>
+    <div id="tools">
+        <h1>도구</h1>
+        <img id="s" src="img/scraper.png" alt="" width="100">
+        <span>긁개</span>
+        <img id="c" src="img/NicePng_laser-gun-png_672917.png" alt="" width="100">
+        <span>CancerBEAM 3289</span>
+        <img id="m" src="img/Bone_Meal_JE3_BE3.webp" alt="" width="100">
+        <span>생장 인자</span>
+    </div>
+    <h1 id="info">0
+    </h1>
+    <div id="uplate">
+
+        <div id="plate">
+            <div id="iplate">
+                <div id="specimen">
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/p5@1.6.0/lib/p5.js"></script>
+    <script>
+        let cells = [];
+        let paused = true;
+        let totalArea = 0;
+        let mode = "n";
+        let tools = false;
+        document.getElementById("s").onclick = function() {
+            tools = false
+            if (mode == "s") {
+                mode = "n"
+            }
+            mode = "s"
+        }
+        document.getElementById("c").onclick = function() {
+            tools = false
+            if (mode == "c") {
+                mode = "n"
+            }
+            mode = "c"
+        }
+        document.getElementById("m").onclick = function() {
+            tools = false
+            if (mode == "m") {
+                mode = "n"
+            }
+            mode = "m"
+        }
+        document.getElementById("tools").onclick = function() {
+            if (tools == true) {
+                tools = false
+                document.getElementById("tools").style.left = "-220px";
+            } else {
+                document.getElementById("tools").style.left = "0px";
+                tools = true
+            }
+        }
+
+        function setup() {
+            const canvas = createCanvas(695, 495);
+            canvas.parent("iplate")
+            for (let i = 0; i < 5; i++) {
+                let cell = new Cell(random(width), random(height));
+                cells.push(cell);
+            }
+        }
+
+        function draw() {
+
+            document.getElementById("info").innerText = cells.length
+            if (!paused) {
+                background(177, 195, 190);
+
+                for (let i = 0; i < cells.length; i++) {
+                    cells[i].move(cells);
+                    cells[i].show();
+                    if (cells[i].shouldSplit()) {
+                        let cellA = cells[i].split();
+                        cells.push(cellA);
+                    }
+                }
+            }
+        }
+
+        function keyPressed() {
+            if (keyCode === 32) { // 스페이스바를 누르면 일시 중지/재시작
+                if (paused && document.getElementById("cover").style.display != "block") {
+                    loop();
+                    document.getElementById("cover").style.display = "none";
+                } else {
+                    noLoop();
+                }
+                paused = !paused;
+            }
+        }
+
+        function mouseClicked() {
+            let clickedCellIndex = []
+            for (let i = 0; i < 10; i++) {
+                clickedCellIndex.push(getClosestCellIndex(mouseX, mouseY));
+                if (clickedCellIndex !== -1) {
+                    if (mode == "s") {
+                        cells.splice(clickedCellIndex, 1);
+                    }
+                    if (mode == "c") {
+                        cells[clickedCellIndex].isCancer = true;
+                        cells[clickedCellIndex].color = [random(120, 100), random(205, 220), random(120, 100)]
+                    }
+                    if (mode == "m") {
+                        cells[clickedCellIndex].r += 30;
+                    }
+                }
+            }
+        }
+
+        // Find the index of the closest cell to (x, y)
+        function getClosestCellIndex(x, y) {
+            let closestIndex = -1;
+            let closestDist = Infinity;
+            for (let i = 0; i < cells.length; i++) {
+                let cell = cells[i];
+                console.log(cell.x)
+                let distToCell = dist(x, y, cell.pos.x, cell.pos.y);
+                if (distToCell < cell.r && distToCell < closestDist) {
+                    closestIndex = i;
+                    closestDist = distToCell;
+                }
+            }
+            return closestIndex;
+        }
+
+
+        class Cell {
+            constructor(x, y, r, c) {
+                this.pos = createVector(x, y);
+                this.vel = p5.Vector.random2D(0);
+                this.vel.mult(random(0.1, 0.3));
+                this.r = r || 60;
+                this.maxR = 120;
+                this.minR = 30;
+                this.color = [random(205, 220), random(120, 100), random(120, 100)]
+                this.area = this.r * this.r;
+                this.isCancer = false;
+            }
+
+            move() {
+                const speed = this.vel.mag();
+
+                // 최대 속도를 제한합니다.
+                const maxSpeed = 3;
+                if (speed > maxSpeed) {
+                    this.vel.setMag(maxSpeed);
+                }
+                this.pos.add(this.vel);
+                this.checkEdges();
+
+                let totalArea = 0;
+                this.area = PI * this.r * this.r;
+                for (let i = 0; i < cells.length; i++) {
+                    totalArea += cells[i].area;
+                }
+                if (totalArea / 16 < 695 * 495 || this.isCancer) {
+                    this.r += random(-0.5, 1);
+                    if (this.isCancer) {
+                        this.r += random(-0.5, 1);
+                    }
+                } else {
+                    this.r += random(-0.4, 0.4);
+                }
+                for (let i = 0; i < cells.length; i++) {
+                    if (this !== cells[i]) { // 자신과는 충돌하지 않도록 함
+                        let distance = dist(this.pos.x, this.pos.y, cells[i].pos.x, cells[i].pos.y);
+                        let minDist = this.r / 2;
+
+                        if (distance < minDist) { // 충돌한 경우
+                            let angle = atan2(cells[i].pos.y - this.pos.y, cells[i].pos.x - this.pos.x);
+                            let targetX = this.pos.x + cos(angle) * minDist;
+                            let targetY = this.pos.y + sin(angle) * minDist;
+                            let force = createVector((targetX - cells[i].pos.x), (targetY - cells[i].pos.y));
+
+                            this.vel.sub(force);
+                            cells[i].vel.add(force);
+                        }
+                    }
+                }
+            }
+
+
+            contains(x, y) {
+                return (Math.abs(this.pos.x - x) < this.r && Math.abs(this.pos.y - y) < this.r);
+            }
+
+            checkEdges() {
+                if (this.pos.x + this.r > width || this.pos.x - this.r < 0) {
+                    this.vel.x *= -1;
+                }
+
+                if (this.pos.y + this.r > height || this.pos.y - this.r < 0) {
+                    this.vel.y *= -1;
+                }
+            }
+
+            show() {
+                stroke(180, 80, 80, 0);
+                fill(this.color)
+                ellipse(this.pos.x, this.pos.y, this.r);
+            }
+
+            shouldSplit() {
+
+                return (this.r > 100); //세포의 크기가 일정 크기 이상이면 분열
+            }
+
+            split() {
+                this.r = this.r / 2;
+
+                let newCell = new Cell(this.pos.x + random(-this.r * 2, this.r * 2), this.pos.y + random(-this.r * 2, this.r * 2), this.r, this.isCancer);
+                if (this.isCancer == true) {
+                    newCell.isCancer = true
+                    newCell.color = [random(120, 100), random(205, 100), random(120, 100)]
+                }
+                return newCell;
+            }
+        }
+    </script>
+</body>
+
+</html>
